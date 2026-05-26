@@ -8,6 +8,8 @@
 
 **Live Demo:** [Frontend (Vercel)](https://safewaves.vercel.app) · [Backend API Docs (Render)](https://safewaves-api.onrender.com/docs)
 
+> ⏳ **First load:** the backend runs on Render's free tier and sleeps after inactivity, so the **first request can take ~30–60 seconds** to wake up. If an analysis seems to hang on the first try, give it a moment and retry — or open the [API docs](https://safewaves-api.onrender.com/docs) first to wake the server. It isn't broken, just cold-starting.
+
 ---
 
 ## Overview
