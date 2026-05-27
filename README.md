@@ -1,233 +1,116 @@
+<div align="center">
+
 # safewaves
 
-**AI-Powered Multi-Threat Cyber Defense Platform**
+**Multi-threat cyber-defense platform with explainable detection.**
 
-> Detect. Analyze. Explain. Defend. — All from one unified dashboard.
+Six ML detectors for phishing, malicious URLs, deepfake images, prompt injection, login anomalies, and AI-generated text. Every verdict comes with a risk score, a SHAP attribution, a plain-English reason, and concrete next steps.
 
-**IndiaNext Hackathon 2026 · BuildStorm Track · K.E.S. Shroff College, Mumbai**
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
+![scikit-learn](https://img.shields.io/badge/scikit--learn-F7931E?style=for-the-badge&logo=scikitlearn&logoColor=white)
+![SHAP](https://img.shields.io/badge/SHAP-2C3E50?style=for-the-badge)
+![Gemini](https://img.shields.io/badge/Gemini-8E75B2?style=for-the-badge&logo=googlegemini&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
 
-**Live Demo:** [Frontend (Vercel)](https://safewaves.vercel.app) · [Backend API Docs (Render)](https://safewaves-api.onrender.com/docs)
+[**Live demo**](https://safewaves.vercel.app) · [**API docs**](https://safewaves-api.onrender.com/docs)
 
-> ⏳ **First load:** the backend runs on Render's free tier and sleeps after inactivity, so the **first request can take ~30–60 seconds** to wake up. If an analysis seems to hang on the first try, give it a moment and retry — or open the [API docs](https://safewaves-api.onrender.com/docs) first to wake the server. It isn't broken, just cold-starting.
+<img src="docs/screenshot.png" alt="safewaves landing page" width="640">
 
----
+</div>
 
-## Overview
+> **First load:** the API runs on Render's free tier and sleeps when idle, so the first request can take 30 to 60 seconds to wake up. If an analysis hangs on the first try, give it a moment and retry, or open the [API docs](https://safewaves-api.onrender.com/docs) first to warm the server.
 
-Cyber attackers increasingly leverage AI to craft convincing phishing emails, fabricate deepfake media, manipulate LLM prompts, and automate credential attacks. Existing security tools operate as black boxes — they label threats without explaining them, cover only one attack surface at a time, and leave analysts without clear remediation guidance.
-
-**safewaves** is a unified, multi-threat cyber defense platform that covers **6 real-world threat domains** with ML-powered detection, **three-layer explainable AI** at every step, and **actionable, prioritized recommendations** — all accessible through a single polished interface. Every detection comes with a risk score, a plain-English explanation, SHAP feature attribution, and concrete next steps.
-
-### Why It Matters
-
-- Phishing remains the #1 attack vector — responsible for 36% of all data breaches (Verizon DBIR 2024)
-- Deepfake fraud incidents have grown 3000% year-over-year
-- Prompt injection is an emerging, largely undefended threat as LLMs enter production systems
-- AI-generated malicious content undermines trust in digital communication at scale
-- Security teams need **explainable** detections — not just binary alerts — to act decisively
+Built for the IndiaNext Hackathon 2026 (BuildStorm track, K.E.S. Shroff College, Mumbai).
 
 ---
+
+## What it does
+
+Most security tools label a threat without explaining it, cover one attack surface at a time, and leave you without a next step. safewaves covers six threat domains in one interface, and every detection returns a risk score, a feature attribution, a plain-English explanation, and prioritized recommendations.
 
 ## Architecture
 
-![safewaves Architecture](architecture-diagram.svg)
-
-The platform is built around a clean separation of concerns across three zones:
+![safewaves architecture](architecture-diagram.svg)
 
 | Zone | Technology | Responsibility |
 |---|---|---|
-| Client Inputs | React 19 + Vite 7 | Forms for 6 threat input types |
-| Backend Pipeline | FastAPI + Python 3.12 | 8-stage processing pipeline |
-| React Frontend | Tailwind v4 + Framer Motion | 5 interactive pages |
+| Client inputs | React 19 + Vite 7 | Forms for the 6 threat input types |
+| Backend pipeline | FastAPI + Python 3.12 | 8-stage processing pipeline |
+| Frontend | Tailwind v4 + Framer Motion | 5 interactive pages |
 
-### Backend Pipeline (8 Stages)
+### Backend pipeline (8 stages)
 
 ```
-[1] API Gateway          FastAPI Router · CORS · Rate Limiter (60 req/min) · Pydantic v2 Validation
+[1] API gateway          FastAPI router · CORS · rate limiter (60 req/min) · Pydantic v2 validation
         ↓
-[2] Feature Extraction   NLP heuristics · Shannon entropy · Levenshtein · ELA image analysis
+[2] Feature extraction   NLP heuristics · Shannon entropy · Levenshtein · ELA image analysis
         ↓
-[3] ML Detection         6 independent specialist modules (sklearn + custom heuristics)
+[3] ML detection         6 independent detector modules (sklearn + custom heuristics)
         ↓
-[4] Explainability       SHAP-style attribution + Gemini 3 Flash NL + Key Factors report
+[4] Explainability       SHAP-style attribution + Gemini NL reason + key factors
         ↓
-[5] Risk Scoring         Score 0–100 · Safe / Low / Medium / High / Critical · Confidence interval
+[5] Risk scoring         score 0-100 · Safe / Low / Medium / High / Critical · confidence
         ↓
-[6] Recommendations      5–6 context-aware actions per threat · Priority escalation logic
+[6] Recommendations      3-5 context-aware actions per threat · priority escalation
         ↓
-[7] Threat Fusion        Cross-module correlation · Compound risk score · Multi-vector detection
+[7] Threat fusion        cross-module correlation · compound risk · multi-vector detection
         ↓
-[8] Store & Stream       SQLite persistence · In-memory deque (100) · SSE real-time event stream
+[8] Store & stream       SQLite persistence · in-memory deque (100) · SSE event stream
 ```
 
-**Adversarial Testing Engine** (bonus): transforms inputs with obfuscation techniques and re-runs detection to measure robustness under attack.
+## The six detectors
 
-### Separation of Concerns
-
-| Layer | Location | Responsibility |
-|---|---|---|
-| API Layer | `backend/app/api/` | Request validation, routing, response formatting |
-| ML Model Layer | `backend/app/models/ml/` | 6 independent detector classes |
-| Service Layer | `backend/app/services/` | Explainer, risk scorer, Gemini, recommendations, threat store |
-| Schema Layer | `backend/app/models/schemas.py` | Unified Pydantic request/response models |
-| Frontend Pages | `frontend/src/pages/` | 5 page components |
-| Shared Components | `frontend/src/components/shared/` | GlassCard, RiskGauge, SeverityBadge, ConfidenceMeter |
-| Results Components | `frontend/src/components/results/` | ResultPanel, ShapVisualization, ExplanationCard |
-| State | `frontend/src/store/useStore.js` | Zustand global store |
-
----
-
-## Core Modules
-
-### 1. Threat Input Module
-
-The system accepts 6 distinct, validated input types:
-
-| Input Type | Endpoint | Accepts |
-|---|---|---|
-| Email text + subject | `POST /api/v1/analyze/email` | Email body and subject line |
-| URL string | `POST /api/v1/analyze/url` | Any URL for lexical analysis |
-| Image / video / audio | `POST /api/v1/analyze/deepfake` | Multipart file upload (JPEG/PNG) |
-| Prompt text | `POST /api/v1/analyze/prompt` | LLM prompt or any text input |
-| Login event history | `POST /api/v1/analyze/behavior` | JSON array of login events with timestamps, IPs, locations, devices |
-| Text content | `POST /api/v1/analyze/ai-content` | Any text block for AI-authorship analysis |
-
-### 2. ML Detection Engine — 6 Independent Modules
-
-Each module performs custom feature engineering followed by weighted scoring. Phishing and URL modules use trained scikit-learn pipelines (`.joblib`); remaining modules use purpose-built heuristic estimators with `_predict_with_model` hooks for future model replacement.
+Phishing and URL run trained scikit-learn pipelines. The rest use purpose-built heuristic estimators with `_predict_with_model` hooks for swapping in trained models later. 65 engineered features in total.
 
 | Module | Features | Technique |
 |---|---|---|
-| **Phishing Email** | 11 features: urgency keywords, suspicious phrases, URL count, HTML detection, caps ratio, typo-squatting (10 brands × 3-5 variants), emotional manipulation lexicons (fear/greed/curiosity), link-text mismatch, sender impersonation, subject urgency | NLP feature extraction + weighted scoring + sklearn |
-| **Malicious URL** | 18 features: URL length, dot/hyphen count, IP detection, HTTPS, suspicious TLD (18 TLDs), subdomain count, path/query/fragment length, port detection, digit ratio, special chars, Shannon entropy, URL shortener detection (11 services), suspicious keywords (16), Levenshtein typo-squatting (10 brands) | Lexical URL analysis + entropy + edit distance + sklearn |
-| **Deepfake Detection** | 8 features: ELA mean/std/max, Laplacian noise level, color histogram uniformity, face region anomaly, JPEG quality estimate, edge consistency | Error Level Analysis (ELA) + Laplacian noise + Sobel edge detection. Returns base64 heatmap overlay |
-| **Prompt Injection** | 10 features: pattern matches, instruction overrides, role switches, system extraction attempts, delimiter injection, encoding attacks (with base64 decode validation), jailbreak patterns, text length, uppercase ratio, special char density | 13 compiled regex patterns across 7 attack categories. Returns character offsets for UI highlighting |
-| **Behavior Anomaly** | 8 features: unusual hour ratio (1–5 AM), impossible travel (33 city-pair distance table, 1000 km/h speed cap), device diversity, failed login ratio, TOR exit node matching (12 prefixes), rapid-fire logins (<60 s apart), new location ratio, IP diversity | Statistical anomaly detection across temporal, geospatial, and device dimensions |
-| **AI Content Detection** | 10 features: avg sentence length, sentence length variance, vocabulary richness (type-token ratio), punctuation diversity, transition word density (27 words), hedge word density (18 words), trigram repetition, burstiness (coefficient of variation), avg word length, passive voice ratio | Linguistic fingerprint analysis against AI-typical feature ranges |
+| **Phishing email** | 11: urgency keywords, suspicious phrases, URL count, HTML, caps ratio, typo-squatting, emotional manipulation lexicons, link-text mismatch, sender impersonation, subject urgency | NLP feature extraction + weighted scoring + sklearn |
+| **Malicious URL** | 18: length, dot/hyphen count, IP detection, HTTPS, suspicious TLD, subdomain count, path/query length, port, digit ratio, special chars, Shannon entropy, shortener detection, Levenshtein typo-squatting | Lexical analysis + entropy + edit distance + sklearn |
+| **Deepfake image** | 8: ELA mean/std/max, Laplacian noise, color histogram uniformity, face anomaly, JPEG quality, edge consistency | Error Level Analysis + Laplacian noise + Sobel edges, returns a base64 heatmap overlay |
+| **Prompt injection** | 10: pattern matches, instruction overrides, role switches, system extraction, delimiter injection, encoding attacks, jailbreak patterns, length, uppercase ratio, special-char density | 13 compiled regex patterns across 7 attack categories, returns character offsets for UI highlighting |
+| **Behavior anomaly** | 8: unusual-hour ratio, impossible travel (city-pair distance table, 1000 km/h cap), device diversity, failed-login ratio, TOR exit-node match, rapid-fire logins, new-location ratio, IP diversity | Statistical anomaly detection across time, geo, and device |
+| **AI-content** | 10: avg sentence length and variance, vocabulary richness, punctuation diversity, transition-word density, hedge-word density, trigram repetition, burstiness, avg word length, passive-voice ratio | Linguistic fingerprint against AI-typical feature ranges |
 
-### 3. Explainability Module — Three Layers
+## Explainability
 
-**Layer 1 — SHAP-Style Feature Attribution** (`backend/app/services/explainer.py`)
-- Computes per-feature contribution: `feature_value × weight = contribution`
-- Returns top 5 features sorted by absolute contribution
-- Classifies each factor's impact: `negative` (increases risk), `positive` (increases safety), `neutral`
-- 94-line `FEATURE_DESCRIPTIONS` dict with human-readable explanations across all 6 modules
+Three layers behind every verdict:
 
-**Layer 2 — Natural Language Explanation** (`backend/app/services/gemini_service.py`)
-- Uses `gemini-3-flash-preview` to generate plain-English explanations incorporating threat type, risk score, and top SHAP contributors
-- Full template-based local fallback per threat type (high/medium/low tiers) when Gemini API is unavailable
-- Zero dependency on Gemini for core functionality — system works fully offline
+1. **SHAP-style attribution** (`explainer.py`). Per-feature contribution (`value × weight`), top 5 by absolute impact, each tagged as increasing risk, increasing safety, or neutral.
+2. **Natural-language reason** (`gemini_service.py`). Gemini 3 Flash writes a plain-English explanation from the threat type, risk score, and top contributors. There is a full template fallback per threat type, so the system runs offline with no key.
+3. **Structured key factors.** Each factor carries its name, observed value, impact direction, and a human-readable description, rendered as bars, gauges, and badges in the UI.
 
-**Layer 3 — Structured Key Factors**
-- Each factor includes: feature name, observed value, impact direction, and human-readable description
-- Visualized in the frontend via SHAP bar charts, risk gauges, confidence meters, and severity badges
+## Adversarial testing
 
-### 4. Recommendation Engine (`backend/app/services/recommendation.py`)
+`POST /api/v1/adversarial-test` transforms an input (legitimacy phrases on a phishing email, innocent wrappers around a prompt injection, URL obfuscation), re-runs the full pipeline, and reports whether the verdict held.
 
-- 5–6 specific, actionable recommendations per threat type (all 6 threat types covered)
-- Each recommendation includes: action text, priority level (immediate/high/medium/low), detailed description, and minimum severity threshold
-- Priority escalation logic: for critical/high severity, priorities are automatically bumped up
-- Returns 3–5 sorted recommendations per analysis
-- Generic fallback pool when no specific pool matches
-
-### 5. User Interface — 5 Pages
-
-| Page | Route | Functionality |
-|---|---|---|
-| Landing | `/` | Hero, 6 module cards, workflow explanation, explainability overview, video background |
-| Dashboard | `/dashboard` | Stats (total analyzed, threats detected, safety rate, active modules), risk gauges, recent threats list |
-| Analyze | `/analyze` | 6-tab analysis interface with input forms per module, full result panel with SHAP charts, confidence meter, explanation, recommendations |
-| Threat Feed | `/threat-feed` | SSE real-time threat stream with type/severity filtering, auto-refresh, expandable detail cards |
-| Adversarial Test | `/adversarial` | Module selection, sample data loading, side-by-side original vs adversarial comparison with risk gauges and Robust/Vulnerable badges |
-
----
-
-## Risk Scoring System (`backend/app/services/risk_scorer.py`)
-
-| Score Range | Severity |
-|---|---|
-| 80–100 | Critical |
-| 60–79 | High |
-| 40–59 | Medium |
-| 20–39 | Low |
-| 0–19 | Safe |
-
-Confidence estimation uses: score extremity (weight 0.30), feature signal strength (weight 0.25), ambiguity penalty for 40–60 zone (−0.15), base confidence (0.35), and a +0.10 bonus for decisive scores (>80 or <20).
-
----
-
-## Adversarial Robustness Testing
-
-- Endpoint: `POST /api/v1/adversarial-test`
-- Supported modules: `email`, `url`, `prompt`, `ai_content`
-- Applies adversarial transformations (e.g., appending legitimacy phrases to phishing emails, wrapping prompt injections in innocent context, URL obfuscation)
-- Runs original and adversarial inputs through the full pipeline
-- Reports stability: `robust = original.is_threat == adversarial.is_threat`
-
-| Module | Original Score | Adversarial Score | Result |
+| Module | Original score | Adversarial score | Result |
 |---|---|---|---|
-| URL Scanner | 82 | 72 | Robust |
-| Behavior Anomaly | 100 | 96 | Robust |
-| Deepfake Detection | 71 | 12 | Vulnerable (metadata-only; honest limitation) |
+| URL scanner | 82 | 72 | Robust |
+| Behavior anomaly | 100 | 96 | Robust |
+| Deepfake image | 71 | 12 | Vulnerable (metadata-only, honest limitation) |
 
----
-
-## Tech Stack
-
-### Backend
-
-| Component | Technology |
-|---|---|
-| API Framework | FastAPI (Python 3.12) |
-| Validation | Pydantic v2 |
-| ML Models | Scikit-learn trained pipelines (phishing, URL) + custom heuristic estimators |
-| Image Analysis | Pillow (ELA, JPEG quality) + NumPy (Laplacian, Sobel) |
-| Explainability | Custom SHAP-style attribution engine + SHAP library |
-| LLM Integration | Google Gemini 3 Flash (`gemini-3-flash-preview`) — optional, full local fallback |
-| Real-time Streaming | Server-Sent Events (SSE) |
-| Persistence | SQLite (`threats.db`) |
-| Security | CORS middleware, in-memory sliding-window rate limiter (60 req/min per IP), Pydantic input validation |
-| Deployment | Render (Procfile + `render.yaml`) |
-
-### Frontend
-
-| Component | Technology |
-|---|---|
-| Framework | React 19 + Vite 7 |
-| Styling | Tailwind CSS v4 (glassmorphism dark theme) |
-| Animations | Framer Motion 12 |
-| State Management | Zustand 5 |
-| Routing | React Router 7 |
-| HTTP Client | Axios |
-| Deployment | Vercel (`vercel.json` with API rewrites) |
-
----
-
-## API Reference
+## API
 
 All endpoints are prefixed with `/api/v1`.
 
-| Method | Endpoint | Request Body | Description |
+| Method | Endpoint | Body | Description |
 |---|---|---|---|
-| `POST` | `/analyze/email` | `{ "email_text": "...", "subject": "..." }` | Phishing email analysis |
-| `POST` | `/analyze/url` | `{ "url": "https://..." }` | Malicious URL analysis |
+| `POST` | `/analyze/email` | `{ email_text, subject }` | Phishing email analysis |
+| `POST` | `/analyze/url` | `{ url }` | Malicious URL analysis |
 | `POST` | `/analyze/deepfake` | `multipart/form-data (file)` | Deepfake image analysis |
-| `POST` | `/analyze/prompt` | `{ "text": "..." }` | Prompt injection detection |
-| `POST` | `/analyze/behavior` | `{ "login_history": [...] }` | Behavior anomaly analysis |
-| `POST` | `/analyze/ai-content` | `{ "text": "..." }` | AI-generated content detection |
-| `GET` | `/threat-feed` | — | Aggregated threat feed (SSE stream) |
-| `POST` | `/threat-fusion` | `{ "results": [...] }` | Cross-module threat fusion |
-| `POST` | `/adversarial-test` | `{ "module": "...", "input_data": {...} }` | Adversarial robustness test |
-| `GET` | `/health` | — | Health check |
+| `POST` | `/analyze/prompt` | `{ text }` | Prompt injection detection |
+| `POST` | `/analyze/behavior` | `{ login_history }` | Login behavior anomaly |
+| `POST` | `/analyze/ai-content` | `{ text }` | AI-generated text detection |
+| `GET` | `/threat-feed` | none | Threat feed (SSE stream) |
+| `POST` | `/threat-fusion` | `{ results }` | Cross-module threat fusion |
+| `POST` | `/adversarial-test` | `{ module, input_data }` | Adversarial robustness test |
+| `GET` | `/health` | none | Health check |
 
-### Unified Response Schema (`AnalysisResponse`)
-
-All analysis endpoints return a consistent structure:
+Every analysis returns the same shape:
 
 ```json
 {
-  "id": "uuid",
-  "timestamp": "2026-03-16T14:30:00Z",
   "threat_type": "phishing",
   "risk_score": 87,
   "severity": "critical",
@@ -236,164 +119,70 @@ All analysis endpoints return a consistent structure:
   "explanation": {
     "summary": "This email shows strong indicators of a phishing attack...",
     "key_factors": [
-      {
-        "feature": "urgency_keywords",
-        "value": "5",
-        "impact": "negative",
-        "description": "High count of urgency/fear-inducing words"
-      }
+      { "feature": "urgency_keywords", "value": "5", "impact": "negative",
+        "description": "High count of urgency/fear words" }
     ],
-    "shap_data": { "features": [...], "values": [...], "base_value": 0.5 }
+    "shap_data": { "features": [], "values": [], "base_value": 0.5 }
   },
   "recommendations": [
     { "action": "Block sender", "priority": "immediate", "description": "..." }
-  ],
-  "extra_data": { ... }
+  ]
 }
 ```
 
----
+## Tech stack
 
-## Project Structure
+**Backend.** FastAPI (Python 3.12), Pydantic v2, scikit-learn, Pillow + NumPy for image analysis, a SHAP-style attribution engine, Gemini 3 Flash (optional, with local fallback), Server-Sent Events, SQLite, a sliding-window rate limiter.
+
+**Frontend.** React 19 + Vite 7, Tailwind CSS v4, Framer Motion 12, Zustand 5, React Router 7, Axios.
+
+## Project structure
 
 ```
-safewaves/
-├── backend/
-│   ├── app/
-│   │   ├── api/
-│   │   │   ├── router.py                 # Central API router (9 endpoints)
-│   │   │   └── endpoints/
-│   │   │       ├── email.py              # POST /analyze/email
-│   │   │       ├── url.py                # POST /analyze/url
-│   │   │       ├── deepfake.py           # POST /analyze/deepfake
-│   │   │       ├── prompt.py             # POST /analyze/prompt
-│   │   │       ├── behavior.py           # POST /analyze/behavior
-│   │   │       ├── ai_content.py         # POST /analyze/ai-content
-│   │   │       ├── threat_feed.py        # GET  /threat-feed (SSE)
-│   │   │       ├── fusion.py             # POST /threat-fusion
-│   │   │       └── adversarial.py        # POST /adversarial-test
-│   │   ├── models/
-│   │   │   ├── schemas.py                # Pydantic request/response models
-│   │   │   └── ml/
-│   │   │       ├── phishing_model.py     # Phishing email detector (11 features)
-│   │   │       ├── url_model.py          # Malicious URL detector (18 features)
-│   │   │       ├── deepfake_model.py     # Deepfake image detector (8 features, ELA)
-│   │   │       ├── prompt_model.py       # Prompt injection detector (10 features)
-│   │   │       ├── behavior_model.py     # Behavior anomaly detector (8 features)
-│   │   │       └── ai_content_model.py   # AI content detector (10 features)
-│   │   ├── services/
-│   │   │   ├── explainer.py              # SHAP-style explainability engine
-│   │   │   ├── risk_scorer.py            # Risk scoring + confidence estimation
-│   │   │   ├── recommendation.py         # Context-aware recommendation engine
-│   │   │   ├── gemini_service.py         # Gemini 3 Flash integration (optional)
-│   │   │   └── threat_store.py           # In-memory threat aggregation (deque, max 100)
-│   │   ├── config.py                     # Environment configuration
-│   │   └── main.py                       # FastAPI app entry + rate limiter ASGI middleware
-│   ├── data/
-│   │   ├── models/                       # Trained .joblib sklearn pipelines
-│   │   └── uploads/                      # Temporary file uploads
-│   ├── requirements.txt
-│   └── Procfile                          # Render deployment command
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── shared/                   # GlassCard, RiskGauge, SeverityBadge, ConfidenceMeter, GradientButton, LoadingSpinner
-│   │   │   └── results/                  # ResultPanel, ShapVisualization, ExplanationCard, RecommendationCard
-│   │   ├── pages/
-│   │   │   ├── Landing.jsx               # Landing / marketing page
-│   │   │   ├── Dashboard.jsx             # Stats + recent threats
-│   │   │   ├── Analyze.jsx               # 6-tab analysis interface
-│   │   │   ├── ThreatFeed.jsx            # Real-time SSE threat feed
-│   │   │   └── AdversarialTest.jsx       # Adversarial robustness testing
-│   │   ├── services/api.js               # Axios API client + EventSource for SSE
-│   │   └── store/useStore.js             # Zustand global state
-│   ├── public/
-│   │   ├── logo.svg                      # safewaves shield+wave logo
-│   │   ├── favicon.svg                   # Browser favicon
-│   │   └── bg-video.mp4                  # Looping dashboard background video
-│   ├── vercel.json                       # Vercel deployment config + API rewrites
-│   └── vite.config.js                    # Vite + dev proxy configuration
-├── architecture-diagram.svg              # Platform architecture diagram
-├── render.yaml                           # Render backend deployment config
-└── README.md
+backend/
+  app/
+    api/endpoints/   9 analysis + feed + fusion + adversarial routes
+    models/ml/       6 detector classes
+    models/schemas.py
+    services/        explainer, risk_scorer, recommendation, gemini, threat_store
+    main.py          FastAPI app + rate-limiter middleware
+  data/models/       trained .joblib pipelines
+frontend/
+  src/
+    pages/           Landing, Dashboard, Analyze, ThreatFeed, AdversarialTest
+    components/       shared (GlassCard, RiskGauge, ...) + results (ShapVisualization, ...)
+    store/useStore.js
+architecture-diagram.svg
+render.yaml
 ```
 
----
+## Local setup
 
-## Local Setup
-
-### Prerequisites
-
-- Python 3.12+
-- Node.js 18+
-- npm 9+
-
-### Backend
+**Backend** (Python 3.12+)
 
 ```bash
-cd safewaves/backend
-python -m venv venv
-source venv/bin/activate          # Windows: venv\Scripts\activate
+cd backend
+python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
-uvicorn app.main:app --reload --port 8000
+uvicorn app.main:app --reload --port 8000     # docs at /docs
 ```
 
-Backend runs at `http://localhost:8000`. Interactive API docs at `http://localhost:8000/docs`.
-
-### Frontend
+**Frontend** (Node 18+)
 
 ```bash
-cd safewaves/frontend
+cd frontend
 npm install
-npm run dev
+npm run dev                                    # http://localhost:5173, /api proxied to backend
 ```
 
-Frontend runs at `http://localhost:5173`. Vite proxy forwards all `/api` requests to the backend.
-
-### Environment Variables (Optional)
-
-Create `backend/.env`:
-
-```env
-GEMINI_API_KEY=your_google_gemini_api_key_here
-CORS_ORIGINS=http://localhost:5173,http://localhost:3000
-DEBUG=false
-```
-
-The `GEMINI_API_KEY` is optional. The system runs fully offline with template-based NL explanations when the key is absent.
-
----
+`backend/.env` is optional. Set `GEMINI_API_KEY` for the LLM reason layer; without it the system uses template explanations. `CORS_ORIGINS` controls allowed origins.
 
 ## Deployment
 
-| Service | Platform | Configuration |
+| Service | Platform | Config |
 |---|---|---|
-| Backend API | Render (Python 3.12 free tier) | `render.yaml` + `backend/Procfile` |
-| Frontend SPA | Vercel | `frontend/vercel.json` — rewrites `/api/*` to Render URL, SPA fallback for all other routes |
-
-**Live endpoints:**
-- Frontend: `https://safewaves.vercel.app`
-- Backend API: `https://safewaves-api.onrender.com`
-- API Docs: `https://safewaves-api.onrender.com/docs`
-
----
-
-## Hackathon Coverage
-
-| Judging Criterion | Coverage |
-|---|---|
-| Problem Relevance & Impact (15 pts) | 6 real-world threat domains, practical use case, live deployment |
-| Technical Complexity (15 pts) | 8-stage pipeline, 6 ML modules, custom feature engineering (Shannon entropy, Levenshtein, ELA, impossible travel), adversarial engine |
-| AI / ML Effectiveness (15 pts) | Scikit-learn trained models (phishing, URL) + custom heuristic estimators; 65 total features across modules |
-| Explainable AI Quality (15 pts) | Three-layer system: SHAP feature attribution + Gemini NL explanations + structured key factors; visualized in frontend |
-| Cybersecurity Depth (15 pts) | All 6 OWASP-adjacent threat areas, adversarial robustness testing, CORS + rate limiting + input validation |
-| Innovation & Trend Alignment (10 pts) | Deepfake + prompt injection + AI content detection + adversarial stress-testing of own models |
-| Prototype Quality & Usability (10 pts) | Polished glassmorphism UI, 5 pages, Framer Motion transitions, responsive design |
-| Presentation & Demo (5 pts) | Live at `safewaves.vercel.app`; HTML presentation deck in `presentation/` |
-
-**Bonus areas achieved:** Adversarial robustness testing · Privacy-preserving design (ephemeral processing, no PII stored) · Real-time alerting (SSE) · Deployment readiness (Render + Vercel) · Multi-modal threat fusion endpoint · Secure-by-design (CORS, rate limiting, Pydantic validation)
-
----
+| Backend API | Render (free tier) | `render.yaml` + `backend/Procfile` |
+| Frontend | Vercel | `frontend/vercel.json` rewrites `/api/*` to the Render URL |
 
 ## License
 
