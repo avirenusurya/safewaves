@@ -21,8 +21,6 @@ Six ML detectors for phishing, malicious URLs, deepfake images, prompt injection
 
 > **First load:** the API runs on Render's free tier and sleeps when idle, so the first request can take 30 to 60 seconds to wake up. If an analysis hangs on the first try, give it a moment and retry, or open the [API docs](https://safewaves-api.onrender.com/docs) first to warm the server.
 
-Built for the IndiaNext Hackathon 2026 (BuildStorm track, K.E.S. Shroff College, Mumbai).
-
 ---
 
 ## What it does
