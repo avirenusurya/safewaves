@@ -29,7 +29,7 @@ Most security tools label a threat without explaining it, cover one attack surfa
 
 ## Architecture
 
-![safewaves architecture](architecture-diagram.svg)
+![safewaves architecture](docs/architecture.webp)
 
 | Zone | Technology | Responsibility |
 |---|---|---|
@@ -150,7 +150,7 @@ frontend/
     pages/           Landing, Dashboard, Analyze, ThreatFeed, AdversarialTest
     components/       shared (GlassCard, RiskGauge, ...) + results (ShapVisualization, ...)
     store/useStore.js
-architecture-diagram.svg
+docs/architecture.webp
 render.yaml
 ```
 
